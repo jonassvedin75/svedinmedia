@@ -20,10 +20,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, LogIn } from "lucide-react";
+import { AlertCircle, LogIn, Loader2 } from "lucide-react";
 import Link from "next/link";
+import React from "react"; // Import React
 
-export default function LoginPage() {
+function LoginPageContent() {
   const { login, error: authError, clearError } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -66,6 +67,8 @@ export default function LoginPage() {
             <AlertDescription>
               {authError.message.includes("auth/invalid-credential") 
                 ? "Fel e-postadress eller lösenord." 
+                : authError.message.includes("auth/invalid-api-key")
+                ? "API-nyckeln för Firebase är ogiltig. Kontrollera konfigurationen."
                 : "Ett oväntat fel uppstod. Försök igen."}
             </AlertDescription>
           </Alert>
@@ -99,6 +102,7 @@ export default function LoginPage() {
               )}
             />
             <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+              {form.formState.isSubmitting ? <Loader2 className="animate-spin mr-2" /> : null}
               {form.formState.isSubmitting ? "Loggar in..." : "Logga In"}
             </Button>
           </form>
@@ -113,5 +117,13 @@ export default function LoginPage() {
         </p>
       </CardContent>
     </Card>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <React.Suspense fallback={<div className="flex h-screen w-full items-center justify-center bg-background"><Loader2 className="h-12 w-12 animate-spin text-primary" /></div>}>
+      <LoginPageContent />
+    </React.Suspense>
   );
 }
