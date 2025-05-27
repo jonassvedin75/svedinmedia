@@ -21,12 +21,12 @@ import { useRouter } from "next/navigation";
 
 interface BrandWorkshopMultiStepFormProps {
   workshopSessionId: string;
-  initialWorkshopData?: any; // Type this properly if fetching existing data
+  initialWorkshopData?: any; 
 }
 
 export default function BrandWorkshopMultiStepForm({
   workshopSessionId,
-  initialWorkshopData, // TODO: Fetch and populate existing answers
+  initialWorkshopData, 
 }: BrandWorkshopMultiStepFormProps) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
@@ -39,10 +39,9 @@ export default function BrandWorkshopMultiStepForm({
 
   const currentStepConfig = brandWorkshopSteps[currentStepIndex];
 
-  // Create a dynamic Zod schema based on the current step's questions
   const currentStepSchema = z.object(
     currentStepConfig.questions.reduce((schema, question) => {
-      schema[question.id] = z.string().optional(); // All textareas are optional strings for now
+      schema[question.id] = z.string().optional(); 
       return schema;
     }, {} as Record<string, z.ZodOptional<z.ZodString>>) 
   );
@@ -52,78 +51,68 @@ export default function BrandWorkshopMultiStepForm({
     defaultValues: allAnswers[currentStepConfig.stepIdentifier] || {},
   });
   
-  // Watch all form fields to save on change
   const watchedFields = useWatch({ control: form.control });
 
   useEffect(() => {
-    // Reset form with new default values when step changes
     form.reset(allAnswers[currentStepConfig.stepIdentifier] || {});
-  }, [currentStepIndex, form, currentStepConfig.stepIdentifier]); // Removed allAnswers from dependencies
+  }, [currentStepIndex, form, currentStepConfig.stepIdentifier]); 
   
-  // Debounced save function
   useEffect(() => {
-    if (currentStepConfig.stepIdentifier === 'review_submit') return; // Don't auto-save on review step
+    if (currentStepConfig.stepIdentifier === 'review_submit') return;
 
-    const processSave = async (data: WorkshopStepAnswers) => {
-      if (!user || !workshopSessionId || Object.keys(data).length === 0) return;
+    const processSave = async () => {
+      const currentRawData = form.getValues();
+      if (!user || !workshopSessionId) return;
       
-      // Filter out empty/undefined answers before saving
-      const answersToSave = Object.entries(data).reduce((acc, [key, value]) => {
-        if (value !== undefined && value !== null && value.trim() !== '') {
+      setAllAnswers(prev => {
+        const existingStepData = prev[currentStepConfig.stepIdentifier];
+        if (JSON.stringify(existingStepData) === JSON.stringify(currentRawData)) {
+          return prev; 
+        }
+        return {
+          ...prev,
+          [currentStepConfig.stepIdentifier]: currentRawData,
+        };
+      });
+
+      const answersToSave = Object.entries(currentRawData).reduce((acc, [key, value]) => {
+        if (typeof value === 'string' && value.trim() !== '') {
           acc[key] = value;
         }
         return acc;
       }, {} as WorkshopStepAnswers);
 
-      if (Object.keys(answersToSave).length === 0) {
-         // If all answers for the current step are empty, no need to call server
-        // but update local state to reflect this (e.g. if user deleted text)
-        setAllAnswers(prev => ({
-            ...prev,
-            [currentStepConfig.stepIdentifier]: {},
-        }));
-        return;
-      }
-      
-      // Optimistically update UI state
-      setAllAnswers(prev => ({
-        ...prev,
-        [currentStepConfig.stepIdentifier]: data, // Save current input, even if some are empty
-      }));
-
-      // console.log("Attempting to save:", currentStepConfig.stepIdentifier, answersToSave);
-
-      try {
-        // No need to await here if we don't want to block UI for autosave
-        saveWorkshopStepAnswers({
-          workshopSessionId,
-          stepIdentifier: currentStepConfig.stepIdentifier,
-          stepAnswers: answersToSave,
-          userId: user.uid,
-        }).then(response => {
-          if (response.success) {
-            // console.log(`Autosaved step ${currentStepConfig.stepIdentifier}`);
-          } else {
-            // console.error("Autosave failed:", response.error);
-            // Optionally revert optimistic update or show a small, non-intrusive error
-            // toast({ title: "Autosave Error", description: response.error, variant: "destructive", duration: 2000 });
-          }
-        });
-      } catch (error) {
-        // console.error("Autosave exception:", error);
+      if (Object.keys(answersToSave).length > 0) {
+        try {
+          saveWorkshopStepAnswers({
+            workshopSessionId,
+            stepIdentifier: currentStepConfig.stepIdentifier,
+            stepAnswers: answersToSave,
+            userId: user.uid,
+          }).then(response => {
+            if (response.success) {
+              // console.log(`Autosaved step ${currentStepConfig.stepIdentifier}`);
+            } else {
+              // console.error("Autosave failed:", response.error);
+              // Consider a less intrusive way to show autosave errors
+              // toast({ title: "Autosave Error", description: response.error, variant: "destructive", duration: 2000 });
+            }
+          });
+        } catch (error) {
+          // console.error("Autosave exception:", error);
+        }
       }
     };
 
     const debouncedSave = setTimeout(() => {
-        processSave(form.getValues());
-    }, 1500); // Save 1.5 seconds after last change
+        processSave();
+    }, 1500); 
 
     return () => clearTimeout(debouncedSave);
-  }, [watchedFields, workshopSessionId, currentStepIndex, user, toast, form, currentStepConfig.stepIdentifier]);
+  }, [JSON.stringify(watchedFields), workshopSessionId, currentStepIndex, user, toast, form, currentStepConfig.stepIdentifier]);
 
 
   const handleNext = async () => {
-    // Validate current step before proceeding
     const isValid = await form.trigger();
     if (!isValid) {
       toast({
@@ -135,17 +124,25 @@ export default function BrandWorkshopMultiStepForm({
     }
 
     const currentAnswers = form.getValues();
-     setAllAnswers(prev => ({
+     setAllAnswers(prev => ({ // Ensure allAnswers is up-to-date before potentially navigating
       ...prev,
       [currentStepConfig.stepIdentifier]: currentAnswers,
     }));
 
-    if (user && workshopSessionId && Object.keys(currentAnswers).length > 0) {
+    // Filter for actual answers to save
+    const answersToSave = Object.entries(currentAnswers).reduce((acc, [key, value]) => {
+        if (typeof value === 'string' && value.trim() !== '') {
+          acc[key] = value;
+        }
+        return acc;
+      }, {} as WorkshopStepAnswers);
+
+    if (user && workshopSessionId && Object.keys(answersToSave).length > 0) {
       setIsLoading(true);
       const result = await saveWorkshopStepAnswers({
         workshopSessionId,
         stepIdentifier: currentStepConfig.stepIdentifier,
-        stepAnswers: currentAnswers,
+        stepAnswers: answersToSave, // Save only trimmed, non-empty answers
         userId: user.uid,
       });
       setIsLoading(false);
@@ -155,26 +152,23 @@ export default function BrandWorkshopMultiStepForm({
           description: result.error || "Ett fel uppstod.",
           variant: "destructive",
         });
-        return; // Prevent moving to next step if save fails
+        return; 
       }
     }
     
     if (currentStepIndex < brandWorkshopSteps.length - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
-      // Form will be reset by the useEffect hook dependent on currentStepIndex
     }
   };
 
   const handlePrevious = () => {
     if (currentStepIndex > 0) {
-       // Save current answers before going back
       const currentAnswers = form.getValues();
       setAllAnswers(prev => ({
         ...prev,
         [currentStepConfig.stepIdentifier]: currentAnswers,
       }));
       setCurrentStepIndex(currentStepIndex - 1);
-      // Form will be reset by the useEffect hook dependent on currentStepIndex
     }
   };
 
@@ -184,7 +178,6 @@ export default function BrandWorkshopMultiStepForm({
       return;
     }
     setIsSubmittingFinal(true);
-    // Optional: A final save of all answers or just mark as completed
     const result = await markWorkshopAsCompleted({ workshopSessionId, userId: user.uid });
     setIsSubmittingFinal(false);
 
@@ -192,11 +185,9 @@ export default function BrandWorkshopMultiStepForm({
       toast({
         title: "Workshop Inskickad!",
         description: "Dina svar har sparats och workshopen är markerad som slutförd.",
-        variant: "default",
-        className: "bg-green-500 text-white", // Note: Custom bg color like this might not work with default toast styling, theme colors preferred
+        variant: "default", // Keep default, custom styling in globals.css if needed
         duration: 5000,
       });
-      // Redirect to a summary page or dashboard
       router.push(`/workshops`); 
     } else {
       toast({
@@ -268,13 +259,12 @@ export default function BrandWorkshopMultiStepForm({
             <div className="space-y-4">
                 <Alert variant="default" className="bg-accent border-primary/30">
                     <CheckCircle2 className="h-5 w-5 text-primary" />
-                    <AlertTitle className="text-primary">Redo att skicka in!</AlertTitle>
+                    <AlertTitle className="text-primary font-semibold">Redo att skicka in!</AlertTitle>
                     <AlertDescription className="text-accent-foreground">
                         Tack för dina svar! Granska gärna dina svar genom att klicka 'Föregående fråga' innan du skickar in.
                         Dina svar sparas automatiskt när du navigerar mellan stegen.
                     </AlertDescription>
                 </Alert>
-                {/* Optionally display a summary of answers here */}
             </div>
           )}
         </CardContent>
@@ -292,4 +282,3 @@ export default function BrandWorkshopMultiStepForm({
     </div>
   );
 }
-
