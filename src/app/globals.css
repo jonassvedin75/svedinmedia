@@ -8,25 +8,34 @@ body {
 
 @layer base {
   :root {
-    --background: 228 67% 97%; /* Very light lavender (#F0F2FA) */
-    --foreground: 230 20% 15%; /* Darker foreground for better contrast on light lavender */
+    --background: 216 67% 98%; /* #f8fafd - Main content background */
+    --foreground: 230 20% 15%; /* Darker foreground for general text */
+    
     --card: 228 60% 99%; /* Slightly off-white for cards */
     --card-foreground: 230 20% 15%;
+    
     --popover: 228 60% 99%;
     --popover-foreground: 230 20% 15%;
+    
     --primary: 202 100% 38%; /* New Blue: #007CC2 */
-    --primary-foreground: 0 0% 98%; /* White/very light gray */
+    --primary-foreground: 0 0% 98%; /* White/very light gray for text on primary */
+    
     --secondary: 228 50% 90%; /* Lighter lavender for secondary elements */
     --secondary-foreground: 202 100% 38%; /* Primary color for text on secondary */
+    
     --muted: 228 40% 85%;
-    --muted-foreground: 230 15% 45%;
-    --accent: 207 100% 88%; /* Light sky blue (#c2e7ff) */
+    --muted-foreground: 230 15% 45%; /* Dark-ish gray, used for inactive sidebar icons */
+    
+    --accent: 207 100% 88%; /* Light sky blue - general accent */
     --accent-foreground: 207 100% 30%; /* Darker blue for text on accent */
+    
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 228 30% 80%;
+    
+    --border: 228 30% 80%; /* General border color */
     --input: 228 40% 92%;
     --ring: 202 100% 38%; /* Primary color for rings */
+    
     --chart-1: 12 76% 61%;
     --chart-2: 173 58% 39%;
     --chart-3: 197 37% 24%;
@@ -34,19 +43,20 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
-    /* Old Sidebar specific theme variables - may not be used by new custom sidebar */
-    --sidebar-background: 240 10% 3.9%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 202 100% 48%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 202 100% 58%;
-    --sidebar-accent-foreground: 0 0% 98%;
-    --sidebar-border: 240 3.7% 15.9%;
+    /* Sidebar specific theme variables for the custom sidebar */
+    --sidebar-background: 218 56% 94%;  /* #e9eef6 - Sidebar background */
+    --sidebar-foreground: 230 20% 20%;  /* Dark color for sidebar text */
+    --sidebar-primary: 202 100% 48%;    /* Main blue, used for active item background via --md-primary-container-color */
+    --sidebar-primary-foreground: 0 0% 98%; /* Light color for text on active item */
+    --sidebar-accent: 218 50% 90%;      /* Slightly darker shade of #e9eef6 for hover on sidebar items */
+    --sidebar-accent-foreground: 230 20% 20%; /* Dark color for text on hover (same as default text) */
+    --sidebar-border: 228 30% 80%;      /* Border for sidebar elements */
     --sidebar-ring: 202 100% 48%;
 
     /* NEW CSS Variables for Custom Sidebar (mapping to existing theme) */
-    --md-sidebar-background-color: hsl(var(--sidebar-background)); /* Dark background for sidebar */
-    --md-divider-color: hsl(var(--sidebar-border)); /* Border color for sidebar elements */
+    /* These are used by the custom CSS for #portalSidebar */
+    --md-sidebar-background-color: hsl(var(--sidebar-background));
+    --md-divider-color: hsl(var(--sidebar-border));
     --md-on-surface-color: hsl(var(--sidebar-foreground)); /* Text color on sidebar */
     --md-on-surface-secondary-color: hsl(var(--muted-foreground)); /* Muted text color (e.g., for inactive icons) */
     --md-sidebar-hover-background-color: hsl(var(--sidebar-accent)); /* Hover background for sidebar items */
@@ -56,6 +66,7 @@ body {
 
   .dark {
     /* Dark theme (optional, can be refined or removed if not a primary requirement) */
+    /* For now, dark theme sidebar remains dark with light text as per original setup */
     --background: 230 15% 10%;
     --foreground: 0 0% 95%;
     --card: 230 15% 12%;
@@ -76,13 +87,12 @@ body {
     --input: 230 15% 22%;
     --ring: 202 100% 48%;
     
-    /* Old Sidebar specific theme variables for dark mode - may not be used by new custom sidebar */
     --sidebar-background: 230 15% 18%;
     --sidebar-foreground: 0 0% 90%;
     --sidebar-primary: 202 100% 55%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 202 100% 65%;
-    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-accent: 230 15% 25%; /* Darker hover for dark sidebar */
+    --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 230 15% 28%;
     --sidebar-ring: 202 100% 55%;
 
@@ -183,7 +193,7 @@ body {
     background-color: var(--md-sidebar-hover-background-color); 
 }
 #sidebarToggleBtn .lucide-icon { /* Targeting lucide icons */
-    font-size: 24px; /* lucide icons use stroke-width and size props, not font-size directly for scaling */
+    /* font-size: 24px; lucide icons use stroke-width and size props, not font-size directly for scaling */
     width: 24px;
     height: 24px;
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -242,20 +252,25 @@ body {
 }
 #portalSidebar #sidebarNav a:not(.active):hover { 
     background-color: var(--md-sidebar-hover-background-color); 
+    color: var(--md-on-surface-color); /* Ensure text color stays dark on hover */
 }
+#portalSidebar #sidebarNav a:not(.active):hover .lucide-icon {
+    color: var(--md-on-surface-secondary-color); /* Ensure icon color stays dark on hover */
+}
+
 #portalSidebar #sidebarNav a.active { 
-    background-color: var(--md-primary-container-color); 
-    color: var(--md-on-primary-container-color); 
+    background-color: var(--md-primary-container-color); /* Main blue */
+    color: var(--md-on-primary-container-color); /* Light text */
     font-weight: 500; 
 }
-#portalSidebar #sidebarNav a.active .lucide-icon { /* Targeting lucide icons */
-    color: var(--md-on-primary-container-color); 
+#portalSidebar #sidebarNav a.active .lucide-icon { 
+    color: var(--md-on-primary-container-color); /* Light icon */
 }
 #portalSidebar:not(.sidebar-desktop-expanded) #sidebarNav a.active {
-    background-color: var(--md-primary-container-color); 
+    background-color: var(--md-primary-container-color); /* Main blue */
 }
-#portalSidebar:not(.sidebar-desktop-expanded) #sidebarNav a.active .lucide-icon { /* Targeting lucide icons */
-    color: var(--md-on-primary-container-color); 
+#portalSidebar:not(.sidebar-desktop-expanded) #sidebarNav a.active .lucide-icon { 
+    color: var(--md-on-primary-container-color); /* Light icon */
 }
 .sidebar-overlay { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -321,6 +336,7 @@ body {
 }
 #sidebarUserProfile .logout-button:hover {
   background-color: var(--md-sidebar-hover-background-color);
+  color: var(--md-on-surface-color); /* Ensure text color stays dark on hover */
 }
 #portalSidebar:not(.sidebar-desktop-expanded) #sidebarUserProfile .logout-button {
   width: 56px;
@@ -342,7 +358,7 @@ body {
 
 /* Mobile menu toggle button in the main header (not part of sidebar itself) */
 #mobileMenuToggleBtn {
-    color: var(--md-on-surface-color);
+    color: var(--foreground); /* Use main foreground color for header button */
     background-color: transparent;
     border: none;
     padding: 8px;
@@ -424,22 +440,22 @@ body {
     width: 0;
 }
 
-/* Remove admin group label and specific admin icon styling if not needed or adapt */
+/* Admin group label styling */
 #sidebarNav .sidebar-group-label {
-  padding: 8px 16px;
+  padding: 8px 16px 4px 24px; /* Adjusted padding to match link indentation */
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--md-on-surface-secondary-color);
+  color: var(--md-on-surface-secondary-color); /* Use secondary color for less emphasis */
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: 16px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 #portalSidebar:not(.sidebar-desktop-expanded) #sidebarNav .sidebar-group-label {
-  /* How to show this when collapsed? Maybe as a tooltip or a very small icon/dot. For now, hide text. */
   height: 0;
   padding: 0;
   opacity: 0;
   overflow: hidden;
+  margin-top: 0;
 }
-
-
