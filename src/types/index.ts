@@ -36,11 +36,10 @@ export const StartBrandWorkshopSchema = z.object({
 export type StartBrandWorkshopFormData = z.infer<typeof StartBrandWorkshopSchema>;
 
 // For saving answers for a workshop step
-export const WorkshopStepAnswersSchema = z.object({
-  // Dynamically populated based on step questions.
-  // Example: q1a: z.string().optional(), q1b: z.string().optional(), ...
-  [key: string]: z.string().optional(),
-});
+// Defines a schema for an object where keys are arbitrary strings (e.g., "q1a", "q2b")
+// and values are optional strings. This represents the answers for a single step.
+// Example: { q1a: "answer for q1a", q1b: undefined, q2a: "another answer" }
+export const WorkshopStepAnswersSchema = z.record(z.string().optional());
 export type WorkshopStepAnswers = z.infer<typeof WorkshopStepAnswersSchema>;
 
 
