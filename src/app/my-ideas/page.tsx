@@ -33,7 +33,7 @@ function MyIdeasContent() {
     <div className="space-y-8">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
         <h1 className="text-3xl font-bold tracking-tight text-primary flex items-center gap-2">
-          <ListChecks className="h-8 w-8" /> Mina Sparade Idéer
+          <ListChecks className="h-7 w-7" /> Mina Sparade Idéer
         </h1>
         <Button asChild>
             <Link href="/">Generera Nya Idéer</Link>

@@ -29,7 +29,7 @@ export default function Navbar() {
     <header className="bg-card shadow-md sticky top-0 z-50">
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 text-primary hover:opacity-80 transition-opacity">
-          <BrainCircuit className="h-8 w-8" />
+          <BrainCircuit className="h-7 w-7" />
           <h1 className="text-xl font-semibold">Utvecklingsportalen</h1>
         </Link>
         

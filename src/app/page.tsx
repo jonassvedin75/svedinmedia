@@ -77,7 +77,7 @@ export default function HomePage() {
       <section className="text-center py-10 bg-card rounded-lg shadow-md">
         <div className="container mx-auto">
           <h1 className="text-4xl font-bold tracking-tight text-primary mb-4 flex items-center justify-center gap-3">
-            <Wand2 className="h-10 w-10" /> Utvecklingsportalen
+            <Wand2 className="h-8 w-8" /> Utvecklingsportalen
           </h1>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Generera innovativa idéer för dina projekt. Ange ett tema eller en problemformulering och låt AI:n hjälpa dig!
@@ -88,7 +88,7 @@ export default function HomePage() {
       <Card className="shadow-lg">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-2xl">
-            <Sparkles className="h-7 w-7 text-primary" /> Generera Nya Idéer
+            <Sparkles className="h-6 w-6 text-primary" /> Generera Nya Idéer
           </CardTitle>
           <CardDescription>
             Ange ett tema, en problemformulering, eller en bransch för att få AI-genererade idéer.
@@ -106,9 +106,9 @@ export default function HomePage() {
             />
             <Button onClick={handleGenerateIdeas} disabled={isLoading} className="w-full sm:w-auto text-base py-3 px-6">
               {isLoading ? (
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               ) : (
-                <Sparkles className="mr-2 h-5 w-5" />
+                <Sparkles className="mr-2 h-4 w-4" />
               )}
               Generera Idéer
             </Button>
@@ -153,17 +153,17 @@ export default function HomePage() {
           <h2 className="text-3xl font-semibold mb-6 text-primary">Hur det fungerar</h2>
           <div className="grid md:grid-cols-3 gap-8">
             <div className="p-6 bg-card rounded-lg shadow-md">
-              <Sparkles className="h-12 w-12 text-accent-foreground mx-auto mb-4" />
+              <Sparkles className="h-10 w-10 text-accent-foreground mx-auto mb-4" />
               <h3 className="text-xl font-medium mb-2">1. Ange Tema</h3>
               <p className="text-muted-foreground">Skriv in ett ämne, problem eller en fråga du vill ha idéer kring.</p>
             </div>
             <div className="p-6 bg-card rounded-lg shadow-md">
-              <BrainCircuit className="h-12 w-12 text-accent-foreground mx-auto mb-4" />
+              <BrainCircuit className="h-10 w-10 text-accent-foreground mx-auto mb-4" />
               <h3 className="text-xl font-medium mb-2">2. AI Genererar</h3>
               <p className="text-muted-foreground">Vår AI analyserar ditt tema och skapar unika, kreativa idéer.</p>
             </div>
             <div className="p-6 bg-card rounded-lg shadow-md">
-              <Save className="h-12 w-12 text-accent-foreground mx-auto mb-4" />
+              <Save className="h-10 w-10 text-accent-foreground mx-auto mb-4" />
               <h3 className="text-xl font-medium mb-2">3. Spara & Utveckla</h3>
               <p className="text-muted-foreground">Spara dina favoritidéer och börja utveckla dem vidare.</p>
             </div>
@@ -173,4 +173,3 @@ export default function HomePage() {
     </div>
   );
 }
-

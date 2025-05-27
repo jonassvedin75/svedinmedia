@@ -56,7 +56,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
-            <LogIn className="h-8 w-8 text-primary" /> Logga In
+            <LogIn className="h-7 w-7 text-primary" /> Logga In
           </CardTitle>
           <CardDescription>Ange dina uppgifter för att logga in på ditt konto.</CardDescription>
         </CardHeader>

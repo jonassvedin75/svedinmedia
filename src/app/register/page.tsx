@@ -55,7 +55,7 @@ export default function RegisterPage() {
       <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold flex items-center justify-center gap-2">
-            <UserPlus className="h-8 w-8 text-primary" /> Registrera Konto
+            <UserPlus className="h-7 w-7 text-primary" /> Registrera Konto
           </CardTitle>
           <CardDescription>Skapa ett nytt konto för att börja spara dina idéer.</CardDescription>
         </CardHeader>
@@ -130,4 +130,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

@@ -54,7 +54,7 @@ function IdeaDetailContent() {
       <Card className="shadow-xl">
         <CardHeader>
           <CardTitle className="text-3xl font-semibold flex items-center gap-2">
-             <FileText className="h-8 w-8 text-primary" /> Idédetaljer
+             <FileText className="h-7 w-7 text-primary" /> Idédetaljer
           </CardTitle>
           {idea.createdAt && (
             <CardDescription className="flex items-center gap-1 text-sm text-muted-foreground">
