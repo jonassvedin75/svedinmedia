@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { generateIdea, type GenerateIdeaInput } from "@/ai/flows/generate-idea";
-import { Loader2, Save, Sparkles, Wand2 } from "lucide-react";
+import { Loader2, Save, Sparkles, Wand2, BrainCircuit } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useIdeas } from "@/contexts/IdeasContext";
 import IdeaCard from "@/components/ideas/IdeaCard";
@@ -173,3 +173,4 @@ export default function HomePage() {
     </div>
   );
 }
+
