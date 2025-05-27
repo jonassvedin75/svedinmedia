@@ -28,17 +28,11 @@ export interface Idea {
 
 
 // --- Workshop Schemas & Types ---
-
-// For starting a brand workshop
 export const StartBrandWorkshopSchema = z.object({
   companyName: z.string().min(1, { message: "Företagsnamn måste anges." }),
 });
 export type StartBrandWorkshopFormData = z.infer<typeof StartBrandWorkshopSchema>;
 
-// For saving answers for a workshop step
-// Defines a schema for an object where keys are arbitrary strings (e.g., "q1a", "q2b")
-// and values are optional strings. This represents the answers for a single step.
-// Example: { q1a: "answer for q1a", q1b: undefined, q2a: "another answer" }
 export const WorkshopStepAnswersSchema = z.record(z.string().optional());
 export type WorkshopStepAnswers = z.infer<typeof WorkshopStepAnswersSchema>;
 
@@ -46,39 +40,72 @@ export type WorkshopStepAnswers = z.infer<typeof WorkshopStepAnswersSchema>;
 export interface WorkshopSession {
   id: string;
   userId: string;
-  companyName?: string; // Specific to brand workshop, could be generalized
-  workshopType: 'brandWorkshop' | string; // Add other workshop types later
+  companyName?: string; 
+  workshopType: 'brandWorkshop' | string; 
   status: 'started' | 'in-progress' | 'completed';
-  createdAt: any; // Firestore Timestamp (or Date for client)
-  lastUpdatedAt: any; // Firestore Timestamp (or Date for client)
+  createdAt: any; 
+  lastUpdatedAt: any; 
   answers: {
     [stepIdentifier: string]: WorkshopStepAnswers;
   };
-  // Add other common workshop fields here
 }
 
-// Structure for a single question within a step
 export interface WorkshopQuestion {
-  id: string; // e.g., "q1a"
-  label: string; // The question text
-  type: 'textarea' | 'text' | 'radio' | 'checkbox'; // Add more as needed
-  options?: { label: string; value: string }[]; // For radio/checkbox
+  id: string; 
+  label: string; 
+  type: 'textarea' | 'text' | 'radio' | 'checkbox'; 
+  options?: { label: string; value: string }[]; 
   placeholder?: string;
 }
 
-// Structure for a step in the multi-step form
 export interface WorkshopFormStep {
-  stepIdentifier: string; // e.g., "pass1_q1"
+  stepIdentifier: string; 
   title: string;
   questions: WorkshopQuestion[];
 }
 
-// For Cloud Function/Server Action responses
+// --- Kreativa Timmen Schemas & Types ---
+export const CreativeHourMissionSchema = z.object({
+  id: z.string().optional(), // Firestore document ID, optional for creation
+  title: z.string().min(1, "Titel måste anges."),
+  category: z.string().min(1, "Kategori måste anges."),
+  taskDescription: z.string().min(1, "Uppdragsbeskrivning måste anges."),
+  bonusTask: z.string().optional(),
+  missionOrder: z.number().min(0, "Ordning måste vara ett positivt tal.").default(0),
+});
+export type CreativeHourMission = z.infer<typeof CreativeHourMissionSchema> & { id: string }; // Ensure id is present after fetch
+
+export const UserCreativeHourSubmissionSchema = z.object({
+  userId: z.string(),
+  missionId: z.string(),
+  companyNameForSession: z.string().optional(),
+  responseText: z.string().min(1, "Svarstext får inte vara tom."),
+  submittedAt: z.any(), // Firestore Timestamp
+});
+export type UserCreativeHourSubmission = z.infer<typeof UserCreativeHourSubmissionSchema> & { id: string };
+
+export const SaveCreativeHourSubmissionInputSchema = z.object({
+  missionId: z.string().min(1, "Uppdrags-ID saknas."),
+  companyNameForSession: z.string().optional(),
+  responseText: z.string().min(1, "Svarstext får inte vara tom."),
+});
+export type SaveCreativeHourSubmissionFormData = z.infer<typeof SaveCreativeHourSubmissionInputSchema>;
+
+
+// --- Admin Schemas & Types ---
+export const AdminDriveLinkSchema = z.object({
+  userId: z.string().min(1, "Användar-ID saknas."), // Could also be companyId or similar identifier
+  driveUrl: z.string().url("Ogiltig URL för Google Drive-mapp.").optional().or(z.literal('')),
+});
+export type AdminDriveLinkFormData = z.infer<typeof AdminDriveLinkSchema>;
+
+
+// --- General Action Response ---
 export interface ActionResponseSuccess<T = any> {
   success: true;
   data?: T;
   message?: string;
-  docId?: string; // Often useful for creation actions
+  docId?: string; 
 }
 
 export interface ActionResponseError {
@@ -87,3 +114,5 @@ export interface ActionResponseError {
 }
 
 export type ActionResponse<T = any> = ActionResponseSuccess<T> | ActionResponseError;
+
+    

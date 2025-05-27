@@ -1,175 +1,223 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateIdea, type GenerateIdeaInput } from "@/ai/flows/generate-idea";
-import { Loader2, Save, Sparkles, BrainCircuit, Lightbulb } from "lucide-react"; // BrainCircuit added
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { SaveCreativeHourSubmissionInputSchema, type SaveCreativeHourSubmissionFormData, type CreativeHourMission } from "@/types";
+import { saveCreativeHourSubmission, getCreativeHourMissions } from "@/actions/creativeHourActions";
+import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { useIdeas } from "@/contexts/IdeasContext"; // Assuming this context is still used for "Kreativa Timmen" ideas
-import IdeaCard from "@/components/ideas/IdeaCard"; // Assuming IdeaCard is generic enough
+import { Loader2, Sparkles, Lightbulb, AlertCircle, Send, FileQuestion } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 export default function KreativaTimmenPage() {
-  const [theme, setTheme] = useState("");
-  const [generatedIdeas, setGeneratedIdeas] = useState<string[]>([]);
+  const [missions, setMissions] = useState<CreativeHourMission[]>([]);
+  const [currentMissionIndex, setCurrentMissionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMissions, setIsLoadingMissions] = useState(true);
+  const [errorMissions, setErrorMissions] = useState<string | null>(null);
+  
+  const { user } = useAuth();
   const { toast } = useToast();
-  const { addIdea: saveIdeaToContext, ideas: savedIdeas } = useIdeas();
 
-  const handleGenerateIdeas = async () => {
-    if (!theme.trim()) {
-      toast({
-        title: "Indata saknas",
-        description: "Vänligen ange ett tema eller en problemformulering.",
-        variant: "destructive",
-      });
+  const form = useForm<SaveCreativeHourSubmissionFormData>({
+    resolver: zodResolver(SaveCreativeHourSubmissionInputSchema),
+    defaultValues: {
+      missionId: "",
+      companyNameForSession: "",
+      responseText: "",
+    },
+  });
+  
+  useEffect(() => {
+    async function fetchMissions() {
+      setIsLoadingMissions(true);
+      setErrorMissions(null);
+      const response = await getCreativeHourMissions();
+      if (response.success && response.data) {
+        setMissions(response.data);
+        if (response.data.length > 0) {
+          form.setValue("missionId", response.data[0].id); // Set initial missionId
+        }
+      } else {
+        setErrorMissions(response.error || "Kunde inte ladda uppdrag.");
+        toast({ title: "Fel vid laddning av uppdrag", description: response.error, variant: "destructive" });
+      }
+      setIsLoadingMissions(false);
+    }
+    fetchMissions();
+  }, [form, toast]);
+
+  const currentMission = missions[currentMissionIndex];
+
+  useEffect(() => {
+    if (currentMission) {
+      form.setValue("missionId", currentMission.id);
+      // Optionally reset responseText if navigating between missions this way
+      // form.reset({ ...form.getValues(), missionId: currentMission.id, responseText: "" }); 
+    }
+  }, [currentMission, form]);
+
+
+  const onSubmit = async (data: SaveCreativeHourSubmissionFormData) => {
+    if (!user) {
+      toast({ title: "Autentisering krävs", variant: "destructive" });
       return;
     }
+    if (!currentMission) {
+        toast({ title: "Inget uppdrag valt", description: "Välj ett uppdrag först.", variant: "destructive"});
+        return;
+    }
+
     setIsLoading(true);
-    setGeneratedIdeas([]);
-    try {
-      const input: GenerateIdeaInput = { theme };
-      const result = await generateIdea(input);
-      if (result.ideas && result.ideas.length > 0) {
-        setGeneratedIdeas(result.ideas);
-        toast({
-          title: "Idéer genererade!",
-          description: `${result.ideas.length} nya idéer har skapats.`,
-        });
-      } else {
-        setGeneratedIdeas(["Kunde inte generera några idéer för detta tema. Försök igen med en annan formulering."]);
-        toast({
-          title: "Inga idéer",
-          description: "AI:n kunde inte generera idéer för det angivna temat.",
-          variant: "default",
-        });
-      }
-    } catch (error) {
-      console.error("Error generating ideas:", error);
+    const result = await saveCreativeHourSubmission({ ...data, missionId: currentMission.id });
+    setIsLoading(false);
+
+    if (result.success) {
       toast({
-        title: "Ett fel uppstod",
-        description: "Kunde inte generera idéer. Försök igen senare.",
+        title: "Svar Sparat!",
+        description: "Ditt svar för Kreativa Timmen har sparats.",
+      });
+      form.reset({ ...form.getValues(), responseText: "" }); // Clear response text
+      // Optionally move to next mission or give choice
+    } else {
+      toast({
+        title: "Fel vid Sparande",
+        description: result.error || "Ett okänt fel uppstod.",
         variant: "destructive",
       });
-      setGeneratedIdeas(["Ett fel uppstod vid generering av idéer."]);
-    } finally {
-      setIsLoading(false);
+    }
+  };
+  
+  // Simple navigation for missions, can be improved
+  const handleNextMission = () => {
+    if (currentMissionIndex < missions.length - 1) {
+      setCurrentMissionIndex(currentMissionIndex + 1);
+    }
+  };
+  const handlePreviousMission = () => {
+     if (currentMissionIndex > 0) {
+      setCurrentMissionIndex(currentMissionIndex - 1);
     }
   };
 
-  const handleSaveIdea = (ideaContent: string) => {
-    saveIdeaToContext(ideaContent); // This adds to IdeasContext, which will show up in "Mina Idéer"
-    toast({
-      title: "Idé sparad!",
-      description: "Din idé har lagts till i 'Mina Idéer'.",
-    });
-  };
-
-  const isIdeaSaved = (ideaContent: string) => {
-    return savedIdeas.some(savedIdea => savedIdea.content === ideaContent);
+  if (isLoadingMissions) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+        <p className="ml-4 text-lg">Laddar uppdrag för Kreativa Timmen...</p>
+      </div>
+    );
   }
+
+  if (errorMissions) {
+    return (
+      <Alert variant="destructive" className="max-w-lg mx-auto">
+        <AlertCircle className="h-4 w-4" />
+        <AlertTitle>Kunde inte ladda Kreativa Timmen</AlertTitle>
+        <AlertDescription>{errorMissions}</AlertDescription>
+      </Alert>
+    );
+  }
+  
+  if (missions.length === 0) {
+    return (
+      <Alert className="max-w-lg mx-auto">
+        <FileQuestion className="h-4 w-4" />
+        <AlertTitle>Inga uppdrag tillgängliga</AlertTitle>
+        <AlertDescription>
+          Det finns inga uppdrag för Kreativa Timmen just nu. En administratör behöver lägga till uppdrag.
+        </AlertDescription>
+      </Alert>
+    );
+  }
+
 
   return (
     <div className="space-y-8">
-      <section className="text-center py-10 bg-card rounded-lg shadow-md">
-        <div className="container mx-auto">
-          <h1 className="text-4xl font-bold tracking-tight text-primary mb-4 flex items-center justify-center gap-3">
-            <Lightbulb className="h-10 w-10" /> Kreativa Timmen
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Få AI-genererad inspiration! Ange ett tema eller en problemformulering och låt AI:n hjälpa dig att bolla fram nya idéer.
-          </p>
-        </div>
+      <section className="text-center">
+        <Lightbulb className="h-12 w-12 text-primary mx-auto mb-4" />
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-primary mb-2">
+          Kreativa Timmen
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Få inspiration och nya perspektiv genom korta, kreativa uppdrag.
+        </p>
       </section>
 
-      <Card className="shadow-lg">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-2xl">
-            <Sparkles className="h-6 w-6 text-primary" /> Generera Nya Idéer
-          </CardTitle>
-          <CardDescription>
-            Ange ett tema, en problemformulering, eller en bransch för att få AI-genererade idéer. Sparade idéer hamnar i "Mina Idéer".
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4 mb-6">
-            <Input
-              type="text"
-              placeholder="t.ex. 'Hållbar stadsutveckling' eller 'Framtidens lärande'"
-              value={theme}
-              onChange={(e) => setTheme(e.target.value)}
-              className="flex-grow text-base"
-              aria-label="Tema eller problemformulering för idégenerering"
-            />
-            <Button onClick={handleGenerateIdeas} disabled={isLoading} className="w-full sm:w-auto text-base py-3 px-6">
-              {isLoading ? (
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              ) : (
-                <Sparkles className="mr-2 h-4 w-4" />
-              )}
-              Generera Idéer
+      {currentMission && (
+        <Card className="w-full max-w-2xl mx-auto shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-2xl text-primary">{currentMission.title}</CardTitle>
+            <CardDescription className="text-sm text-muted-foreground">Kategori: {currentMission.category}</CardDescription>
+            <p className="pt-2">{currentMission.taskDescription}</p>
+            {currentMission.bonusTask && (
+              <p className="pt-1 text-sm text-accent-foreground italic">Bonus: {currentMission.bonusTask}</p>
+            )}
+          </CardHeader>
+          <CardContent>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="companyNameForSession"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Företagsnamn (för kontext, valfritt)</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Ex: Mitt Företag AB" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="responseText"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Ditt svar på uppdraget</FormLabel>
+                      <FormControl>
+                        <Textarea placeholder="Skriv dina tankar och idéer här..." {...field} rows={8} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <input type="hidden" {...form.register("missionId")} />
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? <Loader2 className="animate-spin" /> : <Send className="mr-2 h-4 w-4" />}
+                  Spara Svar
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+          <CardFooter className="flex justify-between">
+            <Button variant="outline" onClick={handlePreviousMission} disabled={currentMissionIndex === 0}>
+              Föregående uppdrag
             </Button>
-          </div>
-
-          {isLoading && (
-            <div className="flex flex-col items-center justify-center text-center p-8 bg-muted/50 rounded-md">
-              <Loader2 className="h-12 w-12 animate-spin text-primary mb-4" />
-              <p className="text-lg font-semibold">Genererar idéer...</p>
-              <p className="text-muted-foreground">Ett ögonblick, AI:n jobbar på din förfrågan.</p>
-            </div>
-          )}
-
-          {!isLoading && generatedIdeas.length > 0 && (
-            <div className="space-y-6">
-              <h3 className="text-xl font-semibold text-primary">Genererade Idéer:</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {generatedIdeas.map((idea, index) => (
-                  <IdeaCard
-                    key={index}
-                    idea={{ id: `generated-${index}`, content: idea, createdAt: new Date() }} // IdeaCard expects an Idea object
-                    actionButton={
-                      <Button 
-                        size="sm" 
-                        onClick={() => handleSaveIdea(idea)} 
-                        disabled={isIdeaSaved(idea)}
-                        variant={isIdeaSaved(idea) ? "secondary" : "default"}
-                      >
-                        <Save className="mr-2 h-4 w-4" />
-                        {isIdeaSaved(idea) ? "Sparad" : "Spara Idé"}
-                      </Button>
-                    }
-                    // showDetailsLink={false} // No details link for newly generated, unsaved ideas
-                  />
-                ))}
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-       <section className="py-10">
-        <div className="container mx-auto text-center">
-          <h2 className="text-3xl font-semibold mb-6 text-primary">Hur det fungerar</h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            <div className="p-6 bg-card rounded-lg shadow-md">
-              <Sparkles className="h-10 w-10 text-accent-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-medium mb-2">1. Ange Tema</h3>
-              <p className="text-muted-foreground">Skriv in ett ämne, problem eller en fråga du vill ha idéer kring.</p>
-            </div>
-            <div className="p-6 bg-card rounded-lg shadow-md">
-              <BrainCircuit className="h-10 w-10 text-accent-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-medium mb-2">2. AI Genererar</h3>
-              <p className="text-muted-foreground">Vår AI analyserar ditt tema och skapar unika, kreativa idéer.</p>
-            </div>
-            <div className="p-6 bg-card rounded-lg shadow-md">
-              <Save className="h-10 w-10 text-accent-foreground mx-auto mb-4" />
-              <h3 className="text-xl font-medium mb-2">3. Spara & Utveckla</h3>
-              <p className="text-muted-foreground">Spara dina favoritidéer i "Mina Idéer" och utveckla dem vidare.</p>
-            </div>
-          </div>
-        </div>
-      </section>
+            <Button variant="outline" onClick={handleNextMission} disabled={currentMissionIndex === missions.length - 1}>
+              Nästa uppdrag
+            </Button>
+          </CardFooter>
+        </Card>
+      )}
+      
+      {!currentMission && missions.length > 0 && (
+         <Alert className="max-w-lg mx-auto">
+            <Sparkles className="h-4 w-4" />
+            <AlertTitle>Välj ett uppdrag</AlertTitle>
+            <AlertDescription>Använd knapparna ovan för att bläddra mellan uppdragen.</AlertDescription>
+        </Alert>
+      )}
     </div>
   );
 }
+
+    
