@@ -1,20 +1,12 @@
 
 import type { Metadata } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
+// Removed Geist font imports
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { IdeasProvider } from '@/contexts/IdeasContext'; // Keep for Kreativa Timmen if needed
+import { IdeasProvider } from '@/contexts/IdeasContext';
 import { Toaster } from "@/components/ui/toaster";
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
-});
+// Removed geistSans and geistMono variables
 
 export const metadata: Metadata = {
   title: 'Utvecklingsportalen',
@@ -28,9 +20,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sv">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
+      {/* Removed font variables from body className */}
+      <body className={`antialiased bg-background text-foreground`}>
         <AuthProvider>
-          <IdeasProvider> {/* Keep for potential use in Kreativa Timmen */}
+          <IdeasProvider>
                 {children}
             <Toaster />
           </IdeasProvider>

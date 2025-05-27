@@ -1,9 +1,11 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 body {
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  /* Reverted to a system font stack */
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 @layer base {
@@ -43,18 +45,17 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
-    /* Sidebar specific theme variables for the custom sidebar */
-    --sidebar-background: 218 56% 94%;  /* #e9eef6 - Sidebar background */
+    /* Sidebar specific theme variables */
+    --sidebar-background: 226 50% 94%; /* #e9eef6 */
     --sidebar-foreground: 230 20% 20%;  /* Dark color for sidebar text */
-    --sidebar-primary: 202 100% 48%;    /* Main blue, used for active item background via --md-primary-container-color */
+    --sidebar-primary: 202 100% 48%;    /* Main blue, used for active item background */
     --sidebar-primary-foreground: 0 0% 98%; /* Light color for text on active item */
-    --sidebar-accent: 218 50% 90%;      /* Slightly darker shade of #e9eef6 for hover on sidebar items */
-    --sidebar-accent-foreground: 230 20% 20%; /* Dark color for text on hover (same as default text) */
+    --sidebar-accent: 226 50% 90%;      /* Slightly darker shade for hover on sidebar items */
+    --sidebar-accent-foreground: 230 20% 20%; /* Dark color for text on hover */
     --sidebar-border: 228 30% 80%;      /* Border for sidebar elements */
     --sidebar-ring: 202 100% 48%;
 
-    /* NEW CSS Variables for Custom Sidebar (mapping to existing theme) */
-    /* These are used by the custom CSS for #portalSidebar */
+    /* Mapping for the custom sidebar CSS */
     --md-sidebar-background-color: hsl(var(--sidebar-background));
     --md-divider-color: hsl(var(--sidebar-border));
     --md-on-surface-color: hsl(var(--sidebar-foreground)); /* Text color on sidebar */
@@ -66,7 +67,6 @@ body {
 
   .dark {
     /* Dark theme (optional, can be refined or removed if not a primary requirement) */
-    /* For now, dark theme sidebar remains dark with light text as per original setup */
     --background: 230 15% 10%;
     --foreground: 0 0% 95%;
     --card: 230 15% 12%;
@@ -91,12 +91,11 @@ body {
     --sidebar-foreground: 0 0% 90%;
     --sidebar-primary: 202 100% 55%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 230 15% 25%; /* Darker hover for dark sidebar */
+    --sidebar-accent: 230 15% 25%; 
     --sidebar-accent-foreground: 0 0% 90%;
     --sidebar-border: 230 15% 28%;
     --sidebar-ring: 202 100% 55%;
 
-    /* NEW CSS Variables for Custom Sidebar in DARK MODE */
     --md-sidebar-background-color: hsl(var(--sidebar-background));
     --md-divider-color: hsl(var(--sidebar-border));
     --md-on-surface-color: hsl(var(--sidebar-foreground));
@@ -153,8 +152,8 @@ body {
     #portalSidebar.sidebar-mobile-open {
         transform: translateX(0);
     }
-    #sidebarDesktopTogglerWrapper { /* This toggler is for desktop, might need a mobile specific one or hide this one */
-      display: none; /* Hide desktop toggler on mobile by default */
+    #sidebarDesktopTogglerWrapper { 
+      display: none; 
     }
 }
 
@@ -192,17 +191,16 @@ body {
 #sidebarToggleBtn:hover {
     background-color: var(--md-sidebar-hover-background-color); 
 }
-#sidebarToggleBtn .lucide-icon { /* Targeting lucide icons */
-    /* font-size: 24px; lucide icons use stroke-width and size props, not font-size directly for scaling */
+#sidebarToggleBtn .lucide-icon { 
     width: 24px;
     height: 24px;
     transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 #portalSidebar ul#sidebarNav {
     flex-grow: 1; 
-    list-style: none; /* Ensure no list bullets */
-    padding: 0; /* Ensure no default padding */
-    margin: 0; /* Ensure no default margin */
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
     overflow-y: auto; 
     overflow-x: hidden; 
 }
@@ -230,11 +228,10 @@ body {
     justify-content: center; 
     border-radius: 50%; 
 }
-#portalSidebar #sidebarNav a .lucide-icon { /* Targeting lucide icons */
-    /* font-size: 24px; */ /* Controlled by size prop in React */
+#portalSidebar #sidebarNav a .lucide-icon { 
     width: 24px;
     height: 24px;
-    color: var(--md-on-surface-secondary-color); /* Lite mjukare färg för inaktiva ikoner */
+    color: var(--md-on-surface-secondary-color); 
     min-width: 24px; 
     margin-right: 24px; 
     transition: margin-right 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.2s ease;
@@ -252,45 +249,42 @@ body {
 }
 #portalSidebar #sidebarNav a:not(.active):hover { 
     background-color: var(--md-sidebar-hover-background-color); 
-    color: var(--md-on-surface-color); /* Ensure text color stays dark on hover */
+    color: var(--md-on-surface-color); 
 }
 #portalSidebar #sidebarNav a:not(.active):hover .lucide-icon {
-    color: var(--md-on-surface-secondary-color); /* Ensure icon color stays dark on hover */
+    color: var(--md-on-surface-secondary-color); 
 }
 
 #portalSidebar #sidebarNav a.active { 
-    background-color: var(--md-primary-container-color); /* Main blue */
-    color: var(--md-on-primary-container-color); /* Light text */
+    background-color: var(--md-primary-container-color); 
+    color: var(--md-on-primary-container-color); 
     font-weight: 500; 
 }
 #portalSidebar #sidebarNav a.active .lucide-icon { 
-    color: var(--md-on-primary-container-color); /* Light icon */
+    color: var(--md-on-primary-container-color); 
 }
 #portalSidebar:not(.sidebar-desktop-expanded) #sidebarNav a.active {
-    background-color: var(--md-primary-container-color); /* Main blue */
+    background-color: var(--md-primary-container-color); 
 }
 #portalSidebar:not(.sidebar-desktop-expanded) #sidebarNav a.active .lucide-icon { 
-    color: var(--md-on-primary-container-color); /* Light icon */
+    color: var(--md-on-primary-container-color); 
 }
 .sidebar-overlay { 
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.32); z-index: 199; /* Lower than sidebar itself */
+    background-color: rgba(0,0,0,0.32); z-index: 199; 
     opacity: 0; visibility: hidden;
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s 0.3s;
 }
-#portalAppWrapper.sidebar-mobile-open .sidebar-overlay { /* Syns när sidebar-mobile-open är på wrapper */
+#portalAppWrapper.sidebar-mobile-open .sidebar-overlay { 
     opacity: 1; visibility: visible;
     transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0s 0s;
 }
 
-/* Adjustments for Lucide icons to behave more like font icons if needed */
 .lucide-icon {
   display: inline-block;
   vertical-align: middle;
-  /* stroke-width: 2; default */
 }
 
-/* Sidebar User Profile/Logout specific styling */
 #sidebarUserProfile {
   padding: 8px;
   border-top: 1px solid var(--md-divider-color);
@@ -320,10 +314,10 @@ body {
 #sidebarUserProfile .logout-button {
   display: flex;
   align-items: center;
-  gap: 12px; /* Matches icon margin-right more or less */
+  gap: 12px; 
   width: 100%;
   justify-content: flex-start;
-  padding: 0 16px; /* Similar to nav links */
+  padding: 0 16px; 
   height: 48px;
   border-radius: 24px;
   color: var(--md-on-surface-color);
@@ -336,7 +330,7 @@ body {
 }
 #sidebarUserProfile .logout-button:hover {
   background-color: var(--md-sidebar-hover-background-color);
-  color: var(--md-on-surface-color); /* Ensure text color stays dark on hover */
+  color: var(--md-on-surface-color); 
 }
 #portalSidebar:not(.sidebar-desktop-expanded) #sidebarUserProfile .logout-button {
   width: 56px;
@@ -356,9 +350,8 @@ body {
   min-width: 24px;
 }
 
-/* Mobile menu toggle button in the main header (not part of sidebar itself) */
 #mobileMenuToggleBtn {
-    color: var(--foreground); /* Use main foreground color for header button */
+    color: var(--foreground); 
     background-color: transparent;
     border: none;
     padding: 8px;
@@ -369,25 +362,23 @@ body {
     height: 24px;
 }
 
-@media (min-width: 768px) { /* md breakpoint */
+@media (min-width: 768px) { 
     #mobileMenuToggleBtn {
         display: none;
     }
 }
 
-
-/* Submenu basic styling */
 #portalSidebar ul#sidebarNav ul {
   list-style: none;
   padding: 0;
-  margin: 0 0 0 20px; /* Indent sub-items when sidebar is expanded */
+  margin: 0 0 0 20px; 
   overflow: hidden;
   max-height: 0;
   transition: max-height 0.3s ease-out;
 }
 
 #portalSidebar.sidebar-desktop-expanded ul#sidebarNav li.submenu-open > ul {
-  max-height: 1000px; /* Arbitrary large number to show all items */
+  max-height: 1000px; 
 }
 
 
@@ -402,26 +393,25 @@ body {
 
 
 #portalSidebar:not(.sidebar-desktop-expanded) ul#sidebarNav ul {
-  display: none; /* Hide submenus completely when sidebar is collapsed */
+  display: none; 
 }
 #portalSidebar:not(.sidebar-desktop-expanded) ul#sidebarNav li > a .lucide-chevron-right {
-  display: none; /* Hide chevron when collapsed */
+  display: none; 
 }
 
 
 #portalSidebar ul#sidebarNav ul a {
   height: 40px;
   font-size: 0.8rem;
-  padding-left: 32px; /* Further indent sub-items */
+  padding-left: 32px; 
 }
 #portalSidebar ul#sidebarNav ul a .lucide-icon {
   margin-right: 16px;
-  width: 20px; /* Smaller icons for sub-items */
+  width: 20px; 
   height: 20px;
 }
 
 #portalSidebar:not(.sidebar-desktop-expanded) #sidebarNav ul a {
-    /* Sub-item styling when collapsed - they shouldn't be visible anyway based on ul display:none */
     width: auto;
     height: auto;
     padding: 0 16px;
@@ -435,17 +425,15 @@ body {
 }
 
 #portalSidebar:not(.sidebar-desktop-expanded) #sidebarNav ul a .nav-text {
-    /* Ensure nav-text is hidden for sub-items when collapsed */
     opacity: 0;
     width: 0;
 }
 
-/* Admin group label styling */
 #sidebarNav .sidebar-group-label {
-  padding: 8px 16px 4px 24px; /* Adjusted padding to match link indentation */
+  padding: 8px 16px 4px 24px; 
   font-size: 0.75rem;
   font-weight: 500;
-  color: var(--md-on-surface-secondary-color); /* Use secondary color for less emphasis */
+  color: var(--md-on-surface-secondary-color); 
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-top: 16px;
