@@ -10,13 +10,13 @@ import {
   signInWithEmailAndPassword, 
   signOut 
 } from 'firebase/auth';
-import type { LoginFormData, RegisterFormData } from '@/types';
+import type { LoginFormData, SignupFormData } from '@/types'; // Updated to SignupFormData
 
 interface AuthContextType {
   user: FirebaseUser | null;
   loading: boolean;
   login: (data: LoginFormData) => Promise<FirebaseUser | null>;
-  register: (data: RegisterFormData) => Promise<FirebaseUser | null>;
+  signup: (data: SignupFormData) => Promise<FirebaseUser | null>; // Updated to SignupFormData
   logout: () => Promise<void>;
   error: AuthError | null;
   clearError: () => void;
@@ -52,14 +52,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const register = async (data: RegisterFormData) => {
+  const signup = async (data: SignupFormData) => { // Updated to SignupFormData
     setLoading(true);
     setError(null);
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       setUser(userCredential.user);
-      // You might want to set display name here if collecting it
-      // await updateProfile(userCredential.user, { displayName: data.name });
       return userCredential.user;
     } catch (e) {
       setError(e as AuthError);
@@ -87,7 +85,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, register, logout, error, clearError }}>
+    <AuthContext.Provider value={{ user, loading, login, signup, logout, error, clearError }}>
       {children}
     </AuthContext.Provider>
   );

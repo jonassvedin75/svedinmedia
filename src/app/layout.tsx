@@ -1,10 +1,9 @@
 
-import type {Metadata} from 'next';
-import {Geist, Geist_Mono} from 'next/font/google';
+import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
 import './globals.css';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { IdeasProvider } from '@/contexts/IdeasContext';
-import Navbar from '@/components/layout/Navbar';
+import { IdeasProvider } from '@/contexts/IdeasContext'; // Keep for Kreativa Timmen if needed
 import { Toaster } from "@/components/ui/toaster";
 
 const geistSans = Geist({
@@ -19,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: 'Utvecklingsportalen',
-  description: 'En portal för att generera och spara utvecklingsidéer.',
+  description: 'Din partner för affärsutveckling och innovation.',
 };
 
 export default function RootLayout({
@@ -29,13 +28,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sv">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}>
         <AuthProvider>
-          <IdeasProvider>
-            <Navbar />
-            <main className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-              {children}
-            </main>
+          <IdeasProvider> {/* Keep for potential use in Kreativa Timmen */}
+                {children}
             <Toaster />
           </IdeasProvider>
         </AuthProvider>

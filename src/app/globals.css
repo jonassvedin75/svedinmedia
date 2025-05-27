@@ -34,15 +34,15 @@ body {
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
 
-    /* Sidebar specific theme variables, can be adjusted if sidebar is used */
-    --sidebar-background: 230 25% 96%;
-    --sidebar-foreground: 230 20% 25%;
-    --sidebar-primary: 202 100% 38%;
+    /* Sidebar specific theme variables */
+    --sidebar-background: 240 10% 3.9%; /* Darker for sidebar */
+    --sidebar-foreground: 0 0% 95%; /* Lighter text for dark sidebar */
+    --sidebar-primary: 202 100% 48%; /* Brighter blue for primary elements in dark sidebar */
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 207 100% 88%;
-    --sidebar-accent-foreground: 207 100% 30%;
-    --sidebar-border: 228 30% 80%;
-    --sidebar-ring: 202 100% 38%;
+    --sidebar-accent: 202 100% 58%; /* Slightly lighter accent for hover/active states */
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 3.7% 15.9%; /* Darker border for sidebar */
+    --sidebar-ring: 202 100% 48%;
   }
 
   .dark {
@@ -53,13 +53,13 @@ body {
     --card-foreground: 0 0% 95%;
     --popover: 230 15% 12%;
     --popover-foreground: 0 0% 95%;
-    --primary: 202 100% 48%; /* Lighter new blue for dark mode */
+    --primary: 202 100% 48%; 
     --primary-foreground: 0 0% 98%;
     --secondary: 230 15% 20%;
     --secondary-foreground: 0 0% 95%;
     --muted: 230 15% 25%;
     --muted-foreground: 0 0% 60%;
-    --accent: 207 100% 70%; /* Adjusted sky blue for dark mode */
+    --accent: 207 100% 70%; 
     --accent-foreground: 207 100% 20%;
     --destructive: 0 70% 50%;
     --destructive-foreground: 0 0% 98%;
@@ -67,14 +67,15 @@ body {
     --input: 230 15% 22%;
     --ring: 202 100% 48%;
     
-    --sidebar-background: 230 15% 12%;
-    --sidebar-foreground: 0 0% 95%;
-    --sidebar-primary: 202 100% 48%;
+    /* Sidebar specific theme variables for dark mode */
+    --sidebar-background: 230 15% 18%; /* Slightly lighter dark for sidebar */
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 202 100% 55%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 207 100% 70%;
-    --sidebar-accent-foreground: 207 100% 20%;
-    --sidebar-border: 230 15% 25%;
-    --sidebar-ring: 202 100% 48%;
+    --sidebar-accent: 202 100% 65%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 230 15% 28%;
+    --sidebar-ring: 202 100% 55%;
   }
 }
 
@@ -85,10 +86,10 @@ body {
   body {
     @apply bg-background text-foreground;
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    /* display: flex; Removed to allow AppShell to control layout */
+    /* flex-direction: column; Removed to allow AppShell to control layout */
   }
   main {
-    flex-grow: 1;
+    flex-grow: 1; /* Ensure main content area takes available space */
   }
 }
