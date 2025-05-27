@@ -56,10 +56,9 @@ export default function BrandWorkshopMultiStepForm({
   const watchedFields = useWatch({ control: form.control });
 
   useEffect(() => {
-    // Reset form with new default values when step changes or allAnswers are updated
+    // Reset form with new default values when step changes
     form.reset(allAnswers[currentStepConfig.stepIdentifier] || {});
-  }, [currentStepIndex, allAnswers, form, currentStepConfig.stepIdentifier]);
-
+  }, [currentStepIndex, form, currentStepConfig.stepIdentifier]); // Removed allAnswers from dependencies
   
   // Debounced save function
   useEffect(() => {
@@ -162,7 +161,7 @@ export default function BrandWorkshopMultiStepForm({
     
     if (currentStepIndex < brandWorkshopSteps.length - 1) {
       setCurrentStepIndex(currentStepIndex + 1);
-      form.reset(allAnswers[brandWorkshopSteps[currentStepIndex + 1].stepIdentifier] || {});
+      // Form will be reset by the useEffect hook dependent on currentStepIndex
     }
   };
 
@@ -175,7 +174,7 @@ export default function BrandWorkshopMultiStepForm({
         [currentStepConfig.stepIdentifier]: currentAnswers,
       }));
       setCurrentStepIndex(currentStepIndex - 1);
-      form.reset(allAnswers[brandWorkshopSteps[currentStepIndex - 1].stepIdentifier] || {});
+      // Form will be reset by the useEffect hook dependent on currentStepIndex
     }
   };
 
@@ -194,7 +193,7 @@ export default function BrandWorkshopMultiStepForm({
         title: "Workshop Inskickad!",
         description: "Dina svar har sparats och workshopen är markerad som slutförd.",
         variant: "default",
-        className: "bg-green-500 text-white",
+        className: "bg-green-500 text-white", // Note: Custom bg color like this might not work with default toast styling, theme colors preferred
         duration: 5000,
       });
       // Redirect to a summary page or dashboard
@@ -267,10 +266,10 @@ export default function BrandWorkshopMultiStepForm({
             </Form>
           ) : (
             <div className="space-y-4">
-                <Alert variant="default" className="bg-green-50 border-green-300">
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                    <AlertTitle className="text-green-700">Redo att skicka in!</AlertTitle>
-                    <AlertDescription className="text-green-600">
+                <Alert variant="default" className="bg-accent border-primary/30">
+                    <CheckCircle2 className="h-5 w-5 text-primary" />
+                    <AlertTitle className="text-primary">Redo att skicka in!</AlertTitle>
+                    <AlertDescription className="text-accent-foreground">
                         Tack för dina svar! Granska gärna dina svar genom att klicka 'Föregående fråga' innan du skickar in.
                         Dina svar sparas automatiskt när du navigerar mellan stegen.
                     </AlertDescription>
@@ -293,3 +292,4 @@ export default function BrandWorkshopMultiStepForm({
     </div>
   );
 }
+
