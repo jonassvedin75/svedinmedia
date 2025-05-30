@@ -11,6 +11,9 @@ runConfig:
 build:
   # Root directory of your application relative to firebase.json.
   rootDir: .
+  # Optional. List of files and directories to ignore when building.
+  ignore:
+    - hosting/
   # Optional. The command to build your application.
   # command: npm run build # Denna behövs normalt inte för Next.js då buildpacken känner igen det
 
