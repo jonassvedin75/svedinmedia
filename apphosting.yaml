@@ -30,4 +30,5 @@ build:
   # - variable: MY_SECRET
   #   secret: mySecretRef
 
+# Triggar ny deployment
 
