@@ -245,6 +245,7 @@ export default function BrandWorkshopMultiStepForm({
                             placeholder={question.placeholder || "Ditt svar..."}
                             {...field}
                             rows={5}
+                            autocomplete="off"
                             className="text-base"
                           />
                         </FormControl>
