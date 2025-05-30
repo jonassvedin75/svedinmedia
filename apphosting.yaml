@@ -10,7 +10,7 @@ runConfig:
 # Build configuration.
 build:
   # Root directory of your application relative to firebase.json.
-  rootDir: hosting
+  rootDir: .
   # Optional. The command to build your application.
   # command: npm run build # Denna behövs normalt inte för Next.js då buildpacken känner igen det
 
